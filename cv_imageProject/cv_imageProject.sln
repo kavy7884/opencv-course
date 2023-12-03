@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.34301.259
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cv_imageProjec", "cv_imageProjec\cv_imageProjec.vcxproj", "{B4C83208-6F6D-4845-AAD0-BC8AF4031626}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cv_imageProject", "cv_imageProject\cv_imageProject.vcxproj", "{B4C83208-6F6D-4845-AAD0-BC8AF4031626}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {59A9CCBC-95EB-42D3-A8EA-3A33157A603C}
+		SolutionGuid = {6384E2A9-09FF-4CD1-83BB-9444C132D797}
 	EndGlobalSection
 EndGlobal

@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cv_imageProjec.cpp">
+    <ClCompile Include="cv_imageProject.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
   </ItemGroup>
