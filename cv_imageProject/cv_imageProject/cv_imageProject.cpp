@@ -1,6 +1,8 @@
 ﻿#include <iostream>
 #include <string>
+#include <vector>
 #include <opencv2/opencv.hpp>
+#include "p201_commonUtil.h"
 int main() {
     // Greeting
     std::cout << "Hello OpenCV World!\n";
@@ -30,6 +32,25 @@ int main() {
         catch (std::exception e) {
             std::cerr << "Exception get: \t" << e.what() << std::endl;
         }
+    }
+    case 1: {
+        // Test case 1:
+        std::string test_dir;
+        std::cout << "Please assign the test directory to be listed: ";
+        std::cin >> test_dir;
+
+        bool re{ false };
+        auto file_list = std::vector<std::string>();
+        re = p201_commonUtil::getFileList(test_dir, file_list);
+
+        if (re) {
+            for (const auto& f : file_list) {
+                std::cout << f << std::endl;
+            }
+
+            std::cout << "Done! " << file_list.size() << " files was found!" << std::endl;
+        }
+        break;
     }
     default:
         break;

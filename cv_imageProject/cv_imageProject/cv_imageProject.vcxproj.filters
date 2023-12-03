@@ -18,5 +18,13 @@
     <ClCompile Include="cv_imageProject.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="p201_commonUtil.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="p201_commonUtil.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
