@@ -269,7 +269,73 @@ int main() {
         }
 
         break;
+    }
+    case 8: {
+        // Test case 8:
+        int height{ 0 }, width{ 0 };
+        int total_sections = 17;
+        std::cout << "Please assign the width of test image:\t";
+        std::cin >> width;
+        if (width % total_sections == 0) {
+            std::cout << "Please assign the height of test image:\t";
+            std::cin >> height;
+            std::uint8_t current_b{ 0 }, current_g{ 255 };
+            auto image = cv::Mat(height, width, CV_8UC3,
+              cv::Scalar(current_b, current_g, 255)); // R is 255 forever!
+            cv::imshow("Blank yellow", image);
+            auto key = cv::waitKey(0);
 
+            if (key == 27) {
+                cv::destroyAllWindows();
+            }  else {
+                cv::destroyAllWindows();
+                int column_section = 1;
+                int delta = 16; // Eachtime the degree of b += 16 and g -= 16. For this case ONLY!
+                bool last_time{ false };
+
+                while ((current_b < 255) && (current_g > 0)) {
+                    if (last_time) break;
+
+                    if (current_b > (255 - delta)) {
+                        current_b = 255;
+                        last_time = true;
+                    } else {
+                        current_b += delta;
+                    }
+
+                    if (current_g < delta) {
+                        current_g = 0;
+                        last_time = true;
+                    }
+                    else {
+                        current_g -= delta;
+                    }
+
+#ifndef NDEBUG
+                    std::cout << "colume_section = " << column_section << std::endl;
+#endif // !NDEBUG
+                    for (int row_id = 0; row_id != image.rows; ++row_id) {
+                        auto colume_start = static_cast<int>(column_section * image.cols / total_sections);
+                        auto colume_end = static_cast<int>((column_section + 1) * image.cols / total_sections);
+
+#ifndef NDEBUG
+                        if (row_id == 0)
+                          std::cout << "column_start = " << colume_start << ", column_end = " << colume_end << std::endl;
+#endif // !NDEBUG
+                        for (int col_id = colume_start; col_id != colume_end; ++col_id) {
+                            image.at<cv::Vec<std::uint8_t, 3>>(row_id, col_id)[0] = current_b;
+                            image.at<cv::Vec<std::uint8_t, 3>>(row_id, col_id)[1] = current_g;
+                        }
+                    }
+                    column_section++;
+                }
+                cv::imshow("Hue evolution = " + std::to_string(total_sections), image);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+            }
+        } else {
+            std::cerr << "The width of test image MUST BE the multiple of " << total_sections << std::endl;
+        }
     }
     default:
         break;
