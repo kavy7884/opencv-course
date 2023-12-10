@@ -1,6 +1,7 @@
 #include "p201_commonUtil.h"
 #include <iostream>
 #include <filesystem>
+#include <unordered_set>
 bool p201_commonUtil::getFileList(const std::string file_path, std::vector<std::string>& file_list) {
 	using namespace std::filesystem;
 	bool re{ false };
@@ -19,6 +20,27 @@ bool p201_commonUtil::getFileList(const std::string file_path, std::vector<std::
 	}
 
 	return re;
+}
+
+void p201_commonUtil::lotteNumberGenerator(cv::Vec<uint8_t, 7>& lotteList) {
+	std::unordered_set<std::uint8_t>::const_iterator it;
+	std::unordered_set<std::uint8_t> lotteSet = std::unordered_set<uint8_t>();
+	cv::RNG prng = cv::RNG(static_cast<uint64_t>(time(nullptr)));
+	int jt = 0;
+
+	while (lotteSet.size() < lotteList.channels) {
+		lotteSet.insert(prng.uniform(1, 48));
+	}
+
+	for (it = lotteSet.begin(); it != lotteSet.end(); ++it) {
+		if (jt < lotteList.channels) {
+		lotteList[jt++] = *it;
+		}
+		else {
+			break;
+		}
+	}
+	return;
 }
 
 bool p201_commonUtil::generateRandomMatrix2D(cv::Mat& buffer) {

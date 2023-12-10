@@ -52,6 +52,19 @@ int main() {
         }
         break;
     }
+    case 2: {
+        cv::Vec<uint8_t, 7> lotteVector = cv::Vec<uint8_t, 7>::zeros();
+        p201_commonUtil::lotteNumberGenerator(lotteVector);
+
+        std::cout << "The selected random number:\t";
+
+        for (int i = 0; i != lotteVector.channels; ++i) {
+            std::cout << static_cast<uint32_t>(lotteVector[i]) << "\t";
+        }
+
+        std::cout << std::endl;
+        break;
+    }
     case 3: {
         // Test case 3:
         bool re{false};
