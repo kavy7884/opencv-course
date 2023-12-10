@@ -337,9 +337,56 @@ int main() {
             std::cerr << "The width of test image MUST BE the multiple of " << total_sections << std::endl;
         }
     }
+    case 9: {
+        // Test case 9:
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                std::uint32_t transp;
+                std::vector<cv::Mat> channels, fixed_channels;
+                std::string export_path, export_dir;
+                
+                std::cout << "The ratio of transparency (0 ~ 255):\t";
+                std::cin >> transp;
+
+                if ((transp < 0) || (transp > 255)) {
+                    std::cerr << "The value is not valid:\t" << transp << " ." << std::endl;
+                } else {
+                    cv::Mat transparency_channel, image_buffer_updated;
+                    cv::split(image_buffer, channels);
+                    transparency_channel = cv::Mat(image_buffer.rows, image_buffer.cols, CV_8UC1, cv::Scalar(transp));
+
+                    fixed_channels.push_back(channels[0]);
+                    fixed_channels.push_back(channels[1]);
+                    fixed_channels.push_back(channels[2]);
+                    fixed_channels.push_back(transparency_channel);
+
+                    cv::merge(fixed_channels, image_buffer_updated);
+                    std::cout << "Please assign the directory for exporting the image file (end with \\):\t";
+                    std::cin >> export_dir;
+
+                    export_path = export_dir + "Test_" + std::to_string(transp) + ".png";
+                    cv::imwrite(export_path, image_buffer_updated);
+                    std::cout << "The transparent image file is saved to " << export_path << std::endl;
+                }
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+
+        break;
+    }
     default:
         break;
     }
-
-    
 }
