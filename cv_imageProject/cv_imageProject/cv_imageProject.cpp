@@ -218,6 +218,59 @@ int main() {
 
         break;
     }
+    case 7: {
+        // Test case 7:
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                std::uint8_t range;
+                std::vector<cv::Mat> channels, fixed_channels;
+                cv::Mat image_buffer_updated;
+                std::cout << "The ratio of blue-ray decreased (0 ~ 100):\t";
+                std::cin >> range;
+                range = 100 - (range % 100);
+
+                cv::split(image_buffer, channels);
+
+                cv::imshow("Original image", image_buffer);
+                cv::imshow("Blue-ray channel image", channels[0]);
+                cv::imshow("Green-ray channel image", channels[1]);
+                cv::imshow("Red-ray channel image", channels[2]);
+
+                for (auto it = channels[0].begin<std::uint8_t>();
+                  it != channels[0].end<std::uint8_t>(); ++it) {
+                    *it = static_cast<std::uint8_t>(
+                      static_cast<double>(*it) * static_cast<double>(range) / 100.0);
+                }
+
+                fixed_channels.push_back(channels[0]);
+                fixed_channels.push_back(channels[1]);
+                fixed_channels.push_back(channels[2]);
+
+                cv::merge(fixed_channels, image_buffer_updated);
+
+                cv::imshow("Blue-ray reduced image", image_buffer_updated);
+
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+
+        break;
+
+    }
     default:
         break;
     }
