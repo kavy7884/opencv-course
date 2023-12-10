@@ -56,3 +56,19 @@ bool p201_commonUtil::generateRandomMatrix2D(cv::Mat& buffer) {
 	}
 	return true;
 }
+
+bool p201_commonUtil::generateRandomMatrix3D(cv::Mat& buffer) {
+	using VectorType = cv::Vec<double, 3>;
+
+	if ((buffer.channels() != 3) || (buffer.depth() != CV_64F))
+		return false;
+
+	auto prng = cv::RNG(static_cast<uint64_t>(time(nullptr)));
+
+	for (auto it = buffer.begin<VectorType>(); it != buffer.end<VectorType>(); ++it) {
+		for (int k = 0; k < (*it).channels; ++k) {
+			(*it)[k] = floor(prng.uniform(0.0, 256.0));
+		}
+	}
+	return true;
+}

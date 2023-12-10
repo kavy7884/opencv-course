@@ -53,6 +53,7 @@ int main() {
         break;
     }
     case 2: {
+        // Test case 2:
         cv::Vec<uint8_t, 7> lotteVector = cv::Vec<uint8_t, 7>::zeros();
         p201_commonUtil::lotteNumberGenerator(lotteVector);
 
@@ -98,6 +99,41 @@ int main() {
             }
         } else {
             std::cerr << "The matrix can only be the 2D array with CV_64F." << std::endl;
+        }
+
+        break;
+    }
+    case 4: {
+        // Test case 4:
+        bool re{ false };
+        int rows{ 0 }, cols{ 0 };
+        cv::Mat randomImage, scaledImage;
+        std::cout << "Please assign the row size for random image:\t";
+        std::cin >> rows;
+        std::cout << "Please assign the col size for random image:\t";
+        std::cin >> cols;
+
+        randomImage = cv::Mat(rows, cols, CV_64FC3);
+        re = p201_commonUtil::generateRandomMatrix3D(randomImage);
+
+        if (re) {
+            randomImage.convertTo(scaledImage, CV_8U, 0.5, 1);
+
+            std::cout << "The randomly generated matrix: " << std::endl;
+            for (int i = 0; i < rows; ++i) {
+                for (int j = 0; j < cols; ++j) {
+                    std::cout << "{ ";
+                    for (int k = 0; k < randomImage.channels(); ++k) {
+                        std::cout << randomImage.at<cv::Vec<double, 3>>(i, j)[k] << " -> ";
+                        std::cout << static_cast<std::uint16_t>(scaledImage.at<cv::Vec<std::uint8_t, 3>>(i, j)[k]) << ", ";
+                    }
+                    std::cout << "}\t ";
+                }
+                std::cout << std::endl;
+            }
+        }
+        else {
+            std::cerr << "The matrix can only be the 3D array with CV_64F." << std::endl;
         }
 
         break;
