@@ -2,6 +2,7 @@
 #include <iostream>
 #include <filesystem>
 #include <unordered_set>
+#include <cmath>
 bool p201_commonUtil::getFileList(const std::string file_path, std::vector<std::string>& file_list) {
 	using namespace std::filesystem;
 	bool re{ false };

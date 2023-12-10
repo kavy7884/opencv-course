@@ -3,6 +3,7 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include "p201_commonUtil.h"
+#include "p203_commonUtil.h"
 int main() {
     // Greeting
     std::cout << "Hello OpenCV World!\n";
@@ -383,7 +384,38 @@ int main() {
         else {
             std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
         }
+        break;
+    }
+    case 10: {
+        // Test case 10:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
 
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                cv::Mat gray_scale_image = cv::Mat(image_buffer.rows, image_buffer.cols, CV_8UC1);
+                re = p203_commonUtil::bgrToGray(image_buffer, gray_scale_image);
+
+                if (re) {
+                    cv::imshow("Grayscale of " + file_name, gray_scale_image);
+                    cv::waitKey(0);
+                    cv::destroyAllWindows();
+                } else {
+                    std::cerr << "Grayscale image generation failed for " << file_name << std::endl;
+                }
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
         break;
     }
     default:

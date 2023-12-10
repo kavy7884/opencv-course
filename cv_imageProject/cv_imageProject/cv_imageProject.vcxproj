@@ -21,9 +21,11 @@
   <ItemGroup>
     <ClCompile Include="cv_imageProject.cpp" />
     <ClCompile Include="p201_commonUtil.cpp" />
+    <ClCompile Include="p203_commonUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="p201_commonUtil.h" />
+    <ClInclude Include="p203_commonUtil.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
