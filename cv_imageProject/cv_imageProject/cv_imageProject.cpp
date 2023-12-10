@@ -138,6 +138,86 @@ int main() {
 
         break;
     }
+    case 5: {
+        // Test case 5:
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+              (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                int key;
+                std::cout << "The info of image:" << std::endl;
+                std::cout << "Hight: " << image_buffer.rows << ", " << std::endl;
+                std::cout << "Width: " << image_buffer.cols << ", " << std::endl;
+                std::cout << "Depth: " << image_buffer.channels() << ", " << std::endl;
+                std::cout << "DataType: " << image_buffer.depth() << ", " << std::endl;
+                cv::imshow("Sample image", image_buffer);
+
+                key = cv::waitKey(0);
+                if (key == 27) { // Esc
+                    cv::destroyAllWindows();
+                }
+            }
+        } else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+
+        break;
+    }
+    case 6: {
+        // Test case 6:
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                std::string target_path;
+                std::cout << "Please assign the directory path storing the cropped images, ended with \"\\\"\: \t";
+                std::cin >> target_path;
+
+                int seg_line = static_cast<int>(image_buffer.cols / 2);
+                auto now_time = std::time(nullptr);
+                auto images_left = image_buffer.colRange(0, seg_line);
+                auto images_right = image_buffer.colRange(seg_line, image_buffer.cols);
+
+                std::string path_left = std::string(target_path) + std::string("image_") 
+                  + std::to_string(now_time) + std::string("_left.jpeg");
+                std::string path_right = std::string(target_path) + std::string("image_")
+                    + std::to_string(now_time) + std::string("_right.jpeg");
+
+                std::vector<int> jpeg_options;
+                jpeg_options.push_back(cv::IMWRITE_JPEG_QUALITY);
+                jpeg_options.push_back(90);
+                jpeg_options.push_back(cv::IMWRITE_JPEG_OPTIMIZE);
+                jpeg_options.push_back(1);
+
+                cv::imwrite(path_left, images_left, jpeg_options);
+                cv::imwrite(path_right, images_right, jpeg_options);
+
+                std::cout << "Image cropping is done! Saved in " << path_left
+                  << "and " << path_right << ". " << std::endl;
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+
+        break;
+    }
     default:
         break;
     }
