@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include "p201_commonUtil.h"
 #include "p203_commonUtil.h"
+#include "p204_commonVariable.h"
 int main() {
     // Greeting
     std::cout << "Hello OpenCV World!\n";
@@ -567,6 +568,121 @@ int main() {
                 cv::imshow("Grayscale of " + file_name, rotated_image);
                 cv::waitKey(0);
                 cv::destroyAllWindows();
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
+    case 16: {
+        // Test case 16:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                using PointType = cv::Point_<float>;
+                std::vector<PointType> src_edge, dst_edge;
+                cv::Mat mapping_matrix, calibrated_buffer;
+                std::time_t now_time = std::time(nullptr);
+                std::string target_dir, file_name_calibrated;
+                std::cout << "Please assign the dir/path storing the calibrated images, ended with \"\\\":\t";
+                std::cin >> target_dir;
+
+                file_name_calibrated = std::string(target_dir) + std::string("calibrated_")
+                    + std::to_string(now_time) + std::string(".jpg");
+
+                if ((image_buffer.cols != P204_DEFAULT_CARLABEL_SIZE_WIDTH) 
+                    || (image_buffer.rows != P204_DEFAULT_CARLABEL_SIZE_HEIGHT)) {
+                    cv::resize(image_buffer, image_buffer, cv::Size(
+                      P204_DEFAULT_CARLABEL_SIZE_WIDTH, P204_DEFAULT_CARLABEL_SIZE_HEIGHT));
+                }
+
+                src_edge.push_back(PointType(30.0, 95.0));
+                src_edge.push_back(PointType(86.0, 311.0));
+                src_edge.push_back(PointType(450.0, 175.0));
+                src_edge.push_back(PointType(426.0, 11.0));
+                dst_edge.push_back(PointType(56.0, 50.0));
+                dst_edge.push_back(PointType(56.0, 273.0));
+                dst_edge.push_back(PointType(444.0, 273.0));
+                dst_edge.push_back(PointType(444.0, 50.0));
+
+                mapping_matrix = cv::getPerspectiveTransform(src_edge, dst_edge);
+                cv::warpPerspective(image_buffer, calibrated_buffer, mapping_matrix,
+                  cv::Size(image_buffer.cols, image_buffer.rows));
+                cv::imshow("Skewed image: " + file_name, image_buffer);
+                cv::waitKey(0);
+                cv::imshow("Calibrated image of: " + file_name, calibrated_buffer);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+                cv::imwrite(file_name_calibrated, calibrated_buffer);
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
+    case 17: {
+        // Test case 17:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                using PointType = cv::Point_<float>;
+                std::vector<PointType> src_edge, dst_edge;
+                cv::Mat cropped_buffer, gray_scale_buffer, boolean_buffer;
+                std::time_t now_time = std::time(nullptr);
+                std::string target_dir, file_name_boolean;
+                std::cout << "Please assign the dir/path storing the cropped images, ended with \"\\\":\t";
+                std::cin >> target_dir;
+
+                file_name_boolean = std::string(target_dir) + std::string("boolean_")
+                    + std::to_string(now_time) + std::string(".jpg");
+
+                if ((image_buffer.cols != P204_DEFAULT_CARLABEL_SIZE_WIDTH)
+                    || (image_buffer.rows != P204_DEFAULT_CARLABEL_SIZE_HEIGHT)) {
+                    cv::resize(image_buffer, image_buffer, cv::Size(
+                        P204_DEFAULT_CARLABEL_SIZE_WIDTH, P204_DEFAULT_CARLABEL_SIZE_HEIGHT));
+                }
+
+                cropped_buffer = image_buffer.colRange(56, 444).rowRange(50, 273);
+                cv::cvtColor(cropped_buffer, gray_scale_buffer, cv::COLOR_BGR2GRAY);
+                boolean_buffer = cv::Mat::zeros(cropped_buffer.rows, cropped_buffer.cols, CV_8UC1);
+
+                for (int i = 0; i < gray_scale_buffer.rows; i++) {
+                    for (int j = 0; j < gray_scale_buffer.cols; j++) {
+                        if (gray_scale_buffer.at<std::uint8_t>(i, j) <= 128) {
+                            boolean_buffer.at<std::uint8_t>(i, j) = 255;
+                        } else {
+                            boolean_buffer.at<std::uint8_t>(i, j) = 0;
+                        }
+                    }
+                }
+                cv::imshow("Grayscale image: " + file_name, gray_scale_buffer);
+                cv::waitKey(0);
+                cv::imshow("Boolean image: " + file_name, boolean_buffer);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+                cv::imwrite(file_name_boolean, boolean_buffer);
             }
         }
         else {

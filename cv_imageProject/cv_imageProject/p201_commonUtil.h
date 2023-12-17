@@ -1,4 +1,5 @@
-#pragma once
+#ifndef P201_COMMON_UTIL_H_
+#define P201_COMMON_UTIL_H_
 #include <string>
 #include <vector>
 #include <opencv2/opencv.hpp>
@@ -14,4 +15,5 @@ class p201_commonUtil {
 
 private:
 };
+#endif
 

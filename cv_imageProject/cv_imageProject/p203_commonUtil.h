@@ -1,4 +1,5 @@
-#pragma once
+#ifndef P203_COMMON_UTIL_H_
+#define P203_COMMON_UTIL_H_
 #include <string>
 #include <vector>
 #include <opencv2/opencv.hpp>
@@ -12,3 +13,4 @@ public:
 
 private:
 };
+#endif
