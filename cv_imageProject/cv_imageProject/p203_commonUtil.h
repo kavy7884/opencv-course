@@ -8,6 +8,7 @@ public:
 	~p203_commonUtil() = default;
 
 	static bool bgrToGray(const cv::Mat& bgr_image, cv::Mat& gray_image);
+	static bool mergeImage(const cv::Mat& image_1, const cv::Mat& image_2, cv::Mat& empty_image);
 
 private:
 };

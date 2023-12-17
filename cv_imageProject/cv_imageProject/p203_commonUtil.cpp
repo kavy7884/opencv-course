@@ -24,3 +24,24 @@ bool p203_commonUtil::bgrToGray(const cv::Mat& bgr_image, cv::Mat& gray_image) {
 	}
 	return true;
 }
+
+bool p203_commonUtil::mergeImage(const cv::Mat& image_1, const cv::Mat& image_2, cv::Mat& empty_image) {
+	if ((image_1.empty()) || (image_2.empty()) || (!empty_image.empty()))
+	  return false;
+	if ((image_1.channels() != 3) || (image_2.channels() != 3) || (image_1.channels() != image_2.channels()))
+		return false;
+	auto size_image_1 = image_1.rows + image_1.cols;
+	auto size_image_2 = image_2.rows + image_2.cols;
+	cv::Mat temp_image;
+
+	if (size_image_1 >= size_image_2) {
+		empty_image = cv::Mat::zeros(image_2.rows, image_2.rows, CV_8UC3);
+		cv::resize(image_1, temp_image, cv::Size(image_2.cols, image_2.rows), 0, 0, cv::INTER_LINEAR);
+		cv::addWeighted(temp_image, 1, image_2, 1, 0, empty_image);
+	} else {
+		empty_image = cv::Mat::zeros(image_1.rows, image_1.rows, CV_8UC3);
+		cv::resize(image_2, temp_image, cv::Size(image_1.cols, image_1.rows), 0, 0, cv::INTER_LINEAR);
+		cv::addWeighted(image_1, 1, temp_image, 1, 0, empty_image);
+	}
+	return true;
+}

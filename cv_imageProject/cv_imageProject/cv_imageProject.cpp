@@ -418,6 +418,162 @@ int main() {
         }
         break;
     }
+    case 11: {
+        // Test case 11:
+        bool re{ false };
+        std::string file_name_1, file_name_2;
+        std::cout << "Please input full path of 1st image: ";
+        std::cin >> file_name_1;
+        std::cout << "Please input full path of 2nd image: ";
+        std::cin >> file_name_2;
+
+        std::cout << cv::haveImageReader(file_name_1) << std::endl;
+        std::cout << cv::haveImageReader(file_name_2) << std::endl;
+
+        if (cv::haveImageReader(file_name_1) && cv::haveImageReader(file_name_2)) {
+            cv::Mat image_buffer_1 = cv::imread(file_name_1);
+            cv::Mat image_buffer_2 = cv::imread(file_name_2);
+            if ((image_buffer_1.data == nullptr) ||
+              (image_buffer_1.empty()) ||
+              (image_buffer_2.data == nullptr) ||
+              (image_buffer_2.empty())) {
+                std::cerr << "At least one file is not parsable for OpenCV. Bye" << std::endl;
+            } else {
+                cv::Mat merged_image;
+                re = p203_commonUtil::mergeImage(image_buffer_1, image_buffer_2, merged_image);
+                if (re) {
+                    cv::imshow("Merged image", merged_image);
+                    cv::waitKey(0);
+                    cv::destroyAllWindows();
+                } else {
+                    std::cerr << "Merging image failled for " << file_name_1 << " and " << file_name_2 << std::endl;
+                }
+            }
+        }
+        else {
+            std::cerr << "At least one file is not parsable for OpenCV. Bye" << std::endl;
+        }
+        break;
+    }
+    case 12: {
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                cv::Mat nagative_image;
+                cv::bitwise_not(image_buffer, nagative_image);
+                cv::imshow("Nagative image", nagative_image);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
+    case 13: {
+        std::uint16_t r, g, b;
+        const int& cols{ 1 }, rows{ 1 };
+        cv::Mat pixel, hsv_array;
+
+        std::cout << "Please assign the degree of Red (0 ~ 255):\t";
+        std::cin >> r;
+        std::cout << "Please assign the degree of Green (0 ~ 255):\t";
+        std::cin >> g;
+        std::cout << "Please assign the degree of Blue (0 ~ 255):\t";
+        std::cin >> b;
+        pixel = cv::Mat(rows, cols, CV_8UC3, cv::Scalar(b, g, r));
+        cv::cvtColor(pixel, hsv_array, cv::COLOR_BGR2HSV_FULL);
+        std::cout << "The info of HSV image: depth = " << hsv_array.depth()
+          << ", channel size = " << hsv_array.channels() << std::endl;
+        for (int i = 0; i < hsv_array.rows; i++) {
+            for (int j = 0; j < hsv_array.cols; j++) {
+                std::cout << "pixel item:\t {H = " << static_cast<std::uint16_t>(
+                    hsv_array.at<cv::Vec<std::uint8_t, 3>>(i, j)[0]) * 360 / 256;
+                std::cout << ", S = " << (static_cast<double>(hsv_array.at<cv::Vec<std::uint8_t, 3>>(i, j)[1]) + 1) / 256.0 * 100.0;
+                std::cout << "%, V = " << (static_cast<double>(hsv_array.at<cv::Vec<std::uint8_t, 3>>(i, j)[2]) + 1) / 256.0 * 100.0 << "%}." << std::endl;;
+            }
+        }
+    }
+    case 14: {
+        // Test case 14:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                cv::Mat gray_scale_image = cv::Mat(image_buffer.rows, image_buffer.cols, CV_8UC1);
+                cv::cvtColor(image_buffer, gray_scale_image, cv::COLOR_BGR2GRAY);
+                std::cout << "The info of gray scaled image: depth = " << gray_scale_image.depth()
+                    << ", channel size = " << gray_scale_image.channels() << std::endl;
+                cv::imshow("Grayscale of " + file_name, gray_scale_image);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
+    case 15: {
+        // Test case 15:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                std::uint32_t angle;
+                cv::Mat rotated_image;
+                std::cout << "Please assign the angle to be rotated counter-wise (90, 270, 180 otherwise): ";
+                std::cin >> angle;
+                switch (angle) {
+                case 90:
+                    cv::rotate(image_buffer, rotated_image, cv::ROTATE_90_CLOCKWISE);
+                    break;
+                case 270:
+                    cv::rotate(image_buffer, rotated_image, cv::ROTATE_90_COUNTERCLOCKWISE);
+                    break;
+                default:
+                    cv::rotate(image_buffer, rotated_image, cv::ROTATE_180);
+                    break;
+                }
+
+                cv::imshow("Grayscale of " + file_name, rotated_image);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
     default:
         break;
     }
