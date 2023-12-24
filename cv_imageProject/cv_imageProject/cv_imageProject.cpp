@@ -190,7 +190,7 @@ int main() {
             }
             else {
                 std::string target_path;
-                std::cout << "Please assign the directory path storing the cropped images, ended with \"\\\"\: \t";
+                std::cout << "Please assign the directory path storing the cropped images, ended with \"\\\"\:\t";
                 std::cin >> target_path;
 
                 int seg_line = static_cast<int>(image_buffer.cols / 2);
@@ -721,6 +721,82 @@ int main() {
                   ofs << "\"" << i << "\",\"" << histogram[i] << "\"" << std::endl;
                 ofs.close();
                 std::cout << "Histogram data generate to " << csv_path << " done!" << std::endl;
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
+    case 19: {
+        // Test case 19:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                cv::Mat eroded_buffer;
+                std::uint16_t morph_size{ 1 };
+                std::cout << "Please assign the size of kernel for eroding operations (1 or 2):\t";
+                std::cin >> morph_size;
+
+                if ((morph_size != 1) && (morph_size != 2))
+                {
+                    std::cerr << "Not supported morph_size generating the eroding/dilating kernel." << std::endl;
+                }
+                else
+                {
+                    cv::Mat erode_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2 * morph_size + 1, 2 * morph_size + 1));
+                    uint16_t morph_type = 0;
+                    std::cout << "Please assign the type of morphology operation (0 = erode, 1 = dilate, 2 = open, 3 = close, 4 = tophat, 5 = blackhat, gredient otherwise):\t";
+                    std::cin >> morph_type;
+
+                    cv::imshow("The original image", image_buffer);
+                    cv::waitKey(0);
+
+                    switch (morph_type)
+                    {
+                    case 0:
+                        cv::erode(image_buffer, eroded_buffer, erode_kernel);
+                        cv::imshow("The eroded image", eroded_buffer);
+                        break;
+                    case 1:
+                        cv::dilate(image_buffer, eroded_buffer, erode_kernel);
+                        cv::imshow("The dilated image", eroded_buffer);
+                        break;
+                    case 2:
+                        cv::morphologyEx(image_buffer, eroded_buffer, cv::MORPH_OPEN, erode_kernel);
+                        cv::imshow("The opened image", eroded_buffer);
+                        break;
+                    case 3:
+                        cv::morphologyEx(image_buffer, eroded_buffer, cv::MORPH_CLOSE, erode_kernel);
+                        cv::imshow("The closed image", eroded_buffer);
+                        break;
+                    case 4:
+                        cv::morphologyEx(image_buffer, eroded_buffer, cv::MORPH_TOPHAT, erode_kernel);
+                        cv::imshow("The tophated image", eroded_buffer);
+                        break;
+                    case 5:
+                        cv::morphologyEx(image_buffer, eroded_buffer, cv::MORPH_BLACKHAT, erode_kernel);
+                        cv::imshow("The blackhated image", eroded_buffer);
+                        break;
+                    default:
+                        cv::morphologyEx(image_buffer, eroded_buffer, cv::MORPH_GRADIENT, erode_kernel);
+                        cv::imshow("The gradiented image", eroded_buffer);
+                        break;
+                    }
+
+                    cv::waitKey(0);
+                    cv::destroyAllWindows();
+                }
             }
         }
         else {
