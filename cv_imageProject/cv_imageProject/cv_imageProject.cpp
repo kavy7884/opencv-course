@@ -1,10 +1,12 @@
 ﻿#include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 #include <opencv2/opencv.hpp>
 #include "p201_commonUtil.h"
 #include "p203_commonUtil.h"
 #include "p204_commonVariable.h"
+#include "p204_commonUtil.h"
 int main() {
     // Greeting
     std::cout << "Hello OpenCV World!\n";
@@ -683,6 +685,42 @@ int main() {
                 cv::waitKey(0);
                 cv::destroyAllWindows();
                 cv::imwrite(file_name_boolean, boolean_buffer);
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
+    case 18: {
+        // Test case 18:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                auto histogram = p204_commonUtil::grayscaleHistogram(image_buffer);
+                std::ofstream ofs;
+                std::string target_dir, csv_path;
+                time_t now_time = std::time(nullptr);
+                std::cout << "Please assign the dir/path storing the cropped images, ended with \"\\\":\t";
+                std::cin >> target_dir;
+
+                csv_path = std::string(target_dir) + std::string("histo_")
+                  + std::to_string(now_time) + std::string(".csv");
+                ofs.open(csv_path);
+                for (size_t i = 0; i < histogram.size(); i++)
+                  ofs << "\"" << i << "\",\"" << histogram[i] << "\"" << std::endl;
+                ofs.close();
+                std::cout << "Histogram data generate to " << csv_path << " done!" << std::endl;
             }
         }
         else {
