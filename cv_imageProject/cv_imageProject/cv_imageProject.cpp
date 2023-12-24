@@ -804,6 +804,160 @@ int main() {
         }
         break;
     }
+    case 20: {
+        // Test case 20:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                std::uint32_t kernel_size;
+                cv::Mat cropped_buffer, blur_buffer, grayscale_buffer, boolean_buffer;
+                std::string target_dir, out_path;
+                time_t now_time = std::time(nullptr);
+                std::cout << "Please assign the dir/path storing the (smoothed and) booleanized images, ended with \"\\\":\t";
+                std::cin >> target_dir;
+                out_path = std::string(target_dir) + std::string("smoothboolean_")
+                    + std::to_string(now_time) + std::string(".jpg");
+
+                std::cout << "Please assign the kernel size for blurring by media of pixels (3, 5, 7, 9, min(width, hight) otherwise): \t";
+                std::cin >> kernel_size;
+
+                if ((kernel_size != 3) && (kernel_size != 5) && (kernel_size != 7) && (kernel_size != 9)) {
+                    if (image_buffer.cols > image_buffer.rows) {
+                        kernel_size = image_buffer.rows;
+                    } else {
+                        kernel_size = image_buffer.cols;
+                    }
+
+                    if (kernel_size % 2 == 0) {
+                        kernel_size--;
+                    }
+                }
+
+                cv::imshow("Original image", image_buffer);
+                cv::waitKey(0);
+                cropped_buffer = image_buffer.colRange(56, 444).rowRange(50, 273);
+                cv::medianBlur(cropped_buffer, blur_buffer, kernel_size);
+                cv::imshow("Blurred image", blur_buffer);
+                cv::waitKey(0);
+                cv::cvtColor(blur_buffer, grayscale_buffer, cv::COLOR_BGR2GRAY);
+                cv::threshold(grayscale_buffer, boolean_buffer, 128, 255, cv::THRESH_BINARY_INV);
+                cv::imshow("Improved boolean image", boolean_buffer);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+                cv::imwrite(out_path, boolean_buffer);
+                std::cout << "image generate to " << out_path << " done!" << std::endl;
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
+    case 21: {
+        // Test case 21:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                std::uint32_t kernel_size{5};
+                cv::Mat grayscale_buffer, blur_buffer, edge_buffer;
+                std::string target_dir, out_path;
+                time_t now_time = std::time(nullptr);
+                std::cout << "Please assign the dir/path storing the edge images, ended with \"\\\":\t";
+                std::cin >> target_dir;
+                out_path = std::string(target_dir) + std::string("edge_")
+                    + std::to_string(now_time) + std::string(".jpg");
+
+                cv::imshow("Original image", image_buffer);
+                cv::waitKey(0);
+                cv::cvtColor(image_buffer, grayscale_buffer, cv::COLOR_BGR2GRAY);
+                cv::GaussianBlur(grayscale_buffer, blur_buffer, cv::Size(kernel_size, kernel_size), 0.0, 0.0);
+                cv::imshow("Blurred image", blur_buffer);
+                cv::waitKey(0);
+                cv::Canny(blur_buffer, edge_buffer, 210, 70);
+                cv::imshow("Edged image", edge_buffer);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+                cv::imwrite(out_path, edge_buffer);
+                std::cout << "image generate to " << out_path << " done!" << std::endl;
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
+    case 22: {
+        // Test case 22:
+        bool re{ false };
+        std::string first_file_name;
+        std::cout << "Please input full path of first image: ";
+        std::cin >> first_file_name;
+        std::string second_file_name;
+        std::cout << "Please input full path of second image: ";
+        std::cin >> second_file_name;
+
+        if (cv::haveImageReader(first_file_name) && cv::haveImageReader(second_file_name)) {
+            cv::Mat image_buffer_01 = cv::imread(first_file_name);
+            cv::Mat image_buffer_02 = cv::imread(second_file_name);
+
+            if ((image_buffer_01.data == nullptr) ||
+                (image_buffer_01.empty()) || 
+                (image_buffer_02.data == nullptr) ||
+                (image_buffer_02.empty())) {
+                std::cerr << "The file is not readable for OpenCV!\t" << std::endl;
+            }
+            else {
+                std::vector<std::pair<std::string, cv::Mat>> image_list;
+                std::vector<double> blur_measurement;
+                image_list.push_back(std::make_pair(first_file_name, image_buffer_01));
+                image_list.push_back(std::make_pair(first_file_name, image_buffer_02));
+                for (size_t i = 0; i < image_list.size(); i++) {
+                    cv::Mat grayscale_buffer, lap_buffer, mean_buffer, stdev_buffer;
+                    cv::cvtColor(image_list[i].second, grayscale_buffer, cv::COLOR_BGR2GRAY);
+                    cv::Laplacian(grayscale_buffer, lap_buffer, CV_64F);
+                    cv::meanStdDev(lap_buffer, mean_buffer, stdev_buffer);
+                    auto blur_value = stdev_buffer.at<double>(0, 0);
+
+                    std::cout << "The degree of blur:\t" << blur_value << "for " << image_list[i].first << "." << std::endl;
+                    blur_measurement.push_back(blur_value);
+                }
+
+                if (blur_measurement[0] > blur_measurement[1]) {
+                    std::cout << "The file is more blur:\t" << image_list[1].first << "." << std::endl;
+                    cv::imshow("Original image", image_list[1].second);
+                    cv::waitKey(0);
+                } else {
+                    std::cout << "The file is more blur:\t" << image_list[0].first << "." << std::endl;
+                    cv::imshow("Original image", image_list[0].second);
+                    cv::waitKey(0);
+                }
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV" << std::endl;
+        }
+        break;
+    }
     default:
         break;
     }
