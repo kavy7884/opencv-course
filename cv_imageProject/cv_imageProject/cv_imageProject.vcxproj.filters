@@ -27,6 +27,9 @@
     <ClCompile Include="p204_commonUtil.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="p206_commonUtil.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="p201_commonUtil.h">
@@ -39,6 +42,12 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="p204_commonUtil.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="p206_commonVariable.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="p206_commonUtil.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

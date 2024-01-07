@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include "p204_commonVariable.h"
 class p204_commonUtil {
 public:
 	p204_commonUtil() = default;

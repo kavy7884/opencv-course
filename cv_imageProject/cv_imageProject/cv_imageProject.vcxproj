@@ -23,12 +23,15 @@
     <ClCompile Include="p201_commonUtil.cpp" />
     <ClCompile Include="p203_commonUtil.cpp" />
     <ClCompile Include="p204_commonUtil.cpp" />
+    <ClCompile Include="p206_commonUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="p201_commonUtil.h" />
     <ClInclude Include="p203_commonUtil.h" />
     <ClInclude Include="p204_commonUtil.h" />
     <ClInclude Include="p204_commonVariable.h" />
+    <ClInclude Include="p206_commonUtil.h" />
+    <ClInclude Include="p206_commonVariable.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

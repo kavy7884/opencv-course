@@ -5,8 +5,8 @@
 #include <opencv2/opencv.hpp>
 #include "p201_commonUtil.h"
 #include "p203_commonUtil.h"
-#include "p204_commonVariable.h"
 #include "p204_commonUtil.h"
+#include "p206_commonUtil.h"
 int main() {
     // Greeting
     std::cout << "Hello OpenCV World!\n";
@@ -1020,6 +1020,27 @@ int main() {
         else {
             std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
         }
+        break;
+    }
+    case 24: {
+        // Test case 24:
+
+        std::string file_name;
+        std::cout << "Please input full path of image file to be read for contour separation: \t";
+        std::cin >> file_name;
+
+        std::vector<std::pair<int, cv::Mat>> image_list;
+
+        auto image_size = p206_commonUtil::splitContours(file_name, 40, 40, image_list);
+
+        if (image_size > 0) {
+            for (auto image : image_list) {
+                cv::imshow("Extracted component", image.second);
+                cv::waitKey(0);
+                cv::destroyAllWindows();
+            }
+        }
+        
         break;
     }
     default:
