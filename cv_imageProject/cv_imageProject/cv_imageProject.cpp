@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <opencv2/opencv.hpp>
+#include <TinyEXIF.h>
 #include "p201_commonUtil.h"
 #include "p203_commonUtil.h"
 #include "p204_commonUtil.h"
@@ -190,7 +191,7 @@ int main() {
             }
             else {
                 std::string target_path;
-                std::cout << "Please assign the directory path storing the cropped images, ended with \"\\\"\:\t";
+                std::cout << "Please assign the directory path storing the cropped images, ended with \"\\\":\t";
                 std::cin >> target_path;
 
                 int seg_line = static_cast<int>(image_buffer.cols / 2);
@@ -1054,6 +1055,34 @@ int main() {
 
         if (ret == ERRNO_EXIF_OK) {
             std::cout << "The file is EXIF-embedded JPEG file:\t" << file_name << std::endl;
+        }
+        break;
+    }
+    case 26: {
+        // Test case 26:
+
+        std::string file_name;
+        std::cout << "Please input full path of image file for extracting the EXIF metadata: \t";
+        std::cin >> file_name;
+
+        auto ret = p206_commonUtil::isJPEGwithEXIF(file_name);
+
+        if (ret == ERRNO_EXIF_OK) {
+            std::ifstream binary_stream(file_name, std::ifstream::binary);
+            auto image_exif = TinyEXIF::EXIFInfo(binary_stream);
+
+            if (image_exif.Fields) {
+                std::cout << "The resolution:\t" << image_exif.ImageWidth << " x " << image_exif.ImageHeight << "." << std::endl;
+                std::cout << "The camera info:\t" << image_exif.Make << " " << image_exif.Model << "." << std::endl;
+
+                if (image_exif.GeoLocation.hasLatLon()) {
+                    std::cout << "The GEO location:\t" << image_exif.GeoLocation.Latitude << ", " << image_exif.GeoLocation.Longitude << "." << std::endl;
+                } else {
+                    std::cout << "The GEO location is NOT available" << std::endl;
+                }
+            }
+
+            binary_stream.close();
         }
         break;
     }
