@@ -44,3 +44,43 @@ size_t p206_commonUtil::splitContours(const std::string file_path,
     }
     return image_list.size();
 }
+
+std::uint8_t p206_commonUtil::isJPEGwithEXIF(const std::string file_path)
+{
+    const int parse_range = 10;
+    char ipeg_header[parse_range];
+    std::uint8_t ret{ ERRNO_EXIF_OK };
+    std::ifstream ifs;
+    ifs.open(file_path, std::ios::binary);
+
+    if (ifs.fail()) {
+        std::cerr << "[" << __func__ << ":" << __LINE__ << "]\tOpen the file failed:\t" << file_path << std::endl;
+    }
+    ifs.read(ipeg_header, parse_range);
+    ifs.close();
+
+#ifndef NDEBUG
+    for (size_t i = 0; i < parse_range; i++) {
+        std::cout << "[" << i << "]\t0x" << std::setw(2) << std::setfill('0') << std::hex;
+        std::cout << static_cast<std::int16_t>(static_cast<std::uint8_t>(ipeg_header[i])) << std::dec << std::endl;
+    }
+#endif // !NDEBUG
+
+    if ((static_cast<std::uint8_t>(ipeg_header[0]) != static_cast<std::uint8_t>(0xff)) ||
+        (static_cast<std::uint8_t>(ipeg_header[1]) != static_cast<std::uint8_t>(0xd8))) {
+        std::cerr << "[" << __func__ << ":" << __LINE__ << "]\tThe file is Not JPEG file:\t" << file_path << std::endl;
+        return ERROR_EXIF_NOT_JPEG;
+    }
+
+    if ((static_cast<std::uint8_t>(ipeg_header[2]) != static_cast<std::uint8_t>(0xff)) ||
+      (static_cast<std::uint8_t>(ipeg_header[3]) != static_cast<std::uint8_t>(0xe1)) ||
+      (static_cast<std::uint8_t>(ipeg_header[6]) != static_cast<std::uint8_t>(0x45)) ||
+      (static_cast<std::uint8_t>(ipeg_header[7]) != static_cast<std::uint8_t>(0x78)) ||
+      (static_cast<std::uint8_t>(ipeg_header[8]) != static_cast<std::uint8_t>(0x69)) ||
+      (static_cast<std::uint8_t>(ipeg_header[9]) != static_cast<std::uint8_t>(0x66))) {
+        std::cerr << "[" << __func__ << ":" << __LINE__ << "]\tThe file is Not contain EXIF:\t" << file_path << std::endl;
+        return ERROR_EXIF_NO_EXIF_IN_JPG;
+    }
+
+    return ret;
+}

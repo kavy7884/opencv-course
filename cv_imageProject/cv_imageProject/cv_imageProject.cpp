@@ -1043,6 +1043,20 @@ int main() {
         
         break;
     }
+    case 25: {
+        // Test case 25:
+
+        std::string file_name;
+        std::cout << "Please input full path of image file for extracting the EXIF metadata: \t";
+        std::cin >> file_name;
+
+        auto ret = p206_commonUtil::isJPEGwithEXIF(file_name);
+
+        if (ret == ERRNO_EXIF_OK) {
+            std::cout << "The file is EXIF-embedded JPEG file:\t" << file_name << std::endl;
+        }
+        break;
+    }
     default:
         break;
     }
