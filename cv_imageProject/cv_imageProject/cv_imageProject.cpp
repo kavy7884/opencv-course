@@ -958,6 +958,70 @@ int main() {
         }
         break;
     }
+    case 23: {
+        // Test case 23:
+        bool re{ false };
+        std::string file_name;
+        std::cout << "Please input full path of image: ";
+        std::cin >> file_name;
+
+        if (cv::haveImageReader(file_name)) {
+            cv::Mat image_buffer = cv::imread(file_name);
+
+            if ((image_buffer.data == nullptr) ||
+                (image_buffer.empty())) {
+                std::cerr << "The file is not readable for OpenCV:\t" << file_name << std::endl;
+            }
+            else {
+                std::uint32_t kernel_size{ 5 };
+                cv::Mat grayscale_buffer, boolean_buffer;
+                std::string target_dir, out_path;
+                std::vector<std::vector<cv::Point_<int>>> contours;
+                std::vector<cv::Vec<int, 4>> hierarchy;
+                time_t now_time = std::time(nullptr);
+                char filled;
+                std::cout << "Please assign the dir/path storing the countour images, ended with \"\\\":\t";
+                std::cin >> target_dir;
+                out_path = std::string(target_dir) + std::string("countour_")
+                    + std::to_string(now_time) + std::string(".jpg");
+                std::cout << "Do you want the detected countour to be filled with predefined color? (Y for filled. Otherwise draw with thin line:\t";
+                std::cin >> filled;
+                cv::Mat dst_buffer = cv::Mat::zeros(image_buffer.rows, image_buffer.cols, CV_8UC3);
+
+                cv::cvtColor(image_buffer, grayscale_buffer, cv::COLOR_BGR2GRAY);
+                cv::threshold(grayscale_buffer, boolean_buffer, 128, 255, cv::THRESH_BINARY_INV);
+                cv::findContours(boolean_buffer, contours, hierarchy, cv::RetrievalModes::RETR_LIST, cv::ContourApproximationModes::CHAIN_APPROX_NONE);
+                
+                cv::imshow("Original image", image_buffer);
+                cv::waitKey(0);
+
+                if ((filled == 'Y') || (filled == 'y')) {
+                    cv::drawContours(dst_buffer, contours, -1, cv::Scalar(255.0, 0.0, 255.0),
+                      cv::LineTypes::FILLED, cv::LineTypes::LINE_AA, hierarchy);
+                } else {
+                    cv::drawContours(dst_buffer, contours, -1, cv::Scalar(255.0, 0.0, 255.0),
+                        1, cv::LineTypes::LINE_AA, hierarchy);
+                }
+
+#ifndef NDEBUG
+                for (auto c_it = contours.begin(); c_it != contours.end(); ++c_it) {
+                    for (auto p_it = c_it->begin(); p_it != c_it->end(); ++p_it) {
+                        std::cout << "The point:\t(" << p_it->x << ", " << p_it->y << ")" << std::endl;
+                    }
+                }
+#endif // !NDEBUG
+
+                cv::imshow("Contour image", dst_buffer);
+                cv::waitKey(0);
+                cv::imwrite(out_path, dst_buffer);
+                std::cout << "image generate to " << out_path << " done!" << std::endl;
+            }
+        }
+        else {
+            std::cerr << "The file is not parsable for OpenCV:\t" << file_name << std::endl;
+        }
+        break;
+    }
     default:
         break;
     }
