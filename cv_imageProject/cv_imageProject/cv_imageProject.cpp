@@ -1103,7 +1103,7 @@ int main() {
             auto frame_time = 1000.0 / fps;
             auto total_second = static_cast<std::uint32_t>(c / fps);
 
-            std::cout << "The file name is opened as video:\t" << file_name << ":" << std::endl;
+            std::cout << "The file name is opened as video:\t" << file_name << ":" << stad::endl;
             std::cout << "\tThe backend decoding the video:\t" << video_obj.getBackendName() << "." << std::endl;
             std::cout << "\tThe resolution of the video:\t" << w << "X" << h << " pixels." << std::endl;
             std::cout << "\tThe length of the video:\t" << total_second / 60 << " mins and " << total_second %60 << " secs. Each frame spent "
@@ -1111,6 +1111,7 @@ int main() {
         } else {
             std::cerr << "The specified file cannot be opened as video:\t" << file_name << "." << std::endl;
         }
+        video_obj.release();
         break;
     }
     default:
