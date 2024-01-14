@@ -1086,6 +1086,33 @@ int main() {
         }
         break;
     }
+    case 28: {
+        // Test case 28:
+
+        std::string file_name;
+        std::cout << "Please input full path of vedio file for extracting the profile: \t";
+        std::cin >> file_name;
+
+        cv::VideoCapture video_obj(file_name, cv::CAP_ANY);
+
+        if (video_obj.isOpened()) {
+            auto w = video_obj.get(cv::CAP_PROP_FRAME_WIDTH);
+            auto h = video_obj.get(cv::CAP_PROP_FRAME_HEIGHT);
+            auto c = video_obj.get(cv::CAP_PROP_FRAME_COUNT);
+            auto fps = video_obj.get(cv::CAP_PROP_FPS);
+            auto frame_time = 1000.0 / fps;
+            auto total_second = static_cast<std::uint32_t>(c / fps);
+
+            std::cout << "The file name is opened as video:\t" << file_name << ":" << std::endl;
+            std::cout << "\tThe backend decoding the video:\t" << video_obj.getBackendName() << "." << std::endl;
+            std::cout << "\tThe resolution of the video:\t" << w << "X" << h << " pixels." << std::endl;
+            std::cout << "\tThe length of the video:\t" << total_second / 60 << " mins and " << total_second %60 << " secs. Each frame spent "
+              << frame_time << " ms." << std::endl;
+        } else {
+            std::cerr << "The specified file cannot be opened as video:\t" << file_name << "." << std::endl;
+        }
+        break;
+    }
     default:
         break;
     }
