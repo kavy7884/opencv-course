@@ -1268,6 +1268,56 @@ int main() {
         video_write_obj.release();
         break;
     }
+    case 32: {
+        // Test case 32:
+        std::string file_path, model_path;
+
+        std::cout << "Please input full path of image file for face detection:\t";
+        std::cin >> file_path;
+        std::cout << "Please input full path for importing the pre-defined face detection model:\t";
+        std::cin >> model_path;
+
+        cv::CascadeClassifier x;
+
+        if (x.load(model_path)) {
+            if (cv::haveImageReader(file_path)) {
+                cv::Mat image_buffer = cv::imread(file_path);
+
+                if ((image_buffer.data == nullptr) ||
+                    (image_buffer.empty())) {
+                    std::cerr << "The file is not readable for OpenCV:\t" << file_path << std::endl;
+                }
+                else {
+                    cv::Mat grayscale_buffer;
+                    double scale_factor = 1.02;
+                    int min_neighbor = 3;
+                    int size_ceiling = 40;
+
+                    std::cout << "Please define the scale factor:\t";
+                    std::cin >> scale_factor;
+                    std::cout << "Please define the min neighbor:\t";
+                    std::cin >> min_neighbor;
+                    std::cout << "Please define the minimum width of rect considered as NOISE:\t";
+                    std::cin >> size_ceiling;
+
+                    std::vector<cv::Rect> faces;
+                    cv::cvtColor(image_buffer, grayscale_buffer, cv::COLOR_BGR2GRAY);
+                    x.detectMultiScale(grayscale_buffer, faces, scale_factor, min_neighbor, 0,
+                        cv::Size(size_ceiling, size_ceiling),
+                        cv::Size(image_buffer.cols / 3, image_buffer.cols / 3));
+
+                    for (auto it = faces.begin(); it != faces.end(); ++it)
+                        cv::rectangle(image_buffer, *it, cv::Scalar(255, 0, 255), 2, cv::LINE_AA);
+
+                    cv::imshow("finfing faces", image_buffer);
+                    cv::waitKey(0);
+                    cv::destroyAllWindows();
+                    std::cout << "totally " << faces.size() << " faced detected. Bye" << std::endl;
+                }
+            }
+        }
+        break;
+    }
     default:
         break;
     }
