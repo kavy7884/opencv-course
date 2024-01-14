@@ -1224,7 +1224,7 @@ int main() {
           static_cast<std::int32_t>(video_read_obj.get(cv::CAP_PROP_FRAME_HEIGHT)));
         video_write_obj = cv::VideoWriter(out_path, api_preference, fourcc, fps, frame_size);
 
-        if (video_read_obj.isOpened() && video_read_obj.isOpened()) {
+        if (video_read_obj.isOpened() && video_write_obj.isOpened()) {
             auto c = video_read_obj.get(cv::CAP_PROP_FRAME_COUNT);
             auto total_second = static_cast<std::uint32_t>(c / fps);
             std::uint32_t location{ 0 }, until{ 0 };
