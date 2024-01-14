@@ -1156,6 +1156,51 @@ int main() {
         video_obj.release();
         break;
     }
+    case 30: {
+        // Test case 30:
+        std::uint32_t fps;
+        std::uint32_t frame_time_multipler{ 1 };
+        bool re{ true };
+
+        std::string file_name;
+        std::cout << "Please input full path of vedio file for play: \t";
+        std::cin >> file_name;
+
+        cv::VideoCapture video_obj(file_name, cv::CAP_ANY);
+
+        if (video_obj.isOpened()) {
+            fps = static_cast<std::uint32_t>(video_obj.get(cv::CAP_PROP_FPS));
+
+            std::cout << "Please assign the speed playing the video (2=0.5 speed, 4=0.25 speed, mormal speed otherwise):\t";
+            std::cin >> frame_time_multipler;
+
+            if ((frame_time_multipler != 2) && (frame_time_multipler != 4)) {
+                frame_time_multipler = 1;
+            }
+            
+        }
+        else {
+            std::cerr << "The specified file cannot be opened as video:\t" << file_name << "." << std::endl;
+        }
+
+        while (video_obj.isOpened()) {
+            cv::Mat current_frame;
+            int current_key;
+            re = video_obj.read(current_frame);
+
+            if (re) {
+                cv::imshow("Playing now", current_frame);
+                current_key = cv::waitKey(1000 * frame_time_multipler / fps);
+
+                if (current_key == 0x1b) break;
+            } else {
+                std::cerr << "Oops! Error extracting the frame from the location of video!" << std::endl;
+            }
+        }
+        cv::destroyAllWindows();
+        video_obj.release();
+        break;
+    }
     default:
         break;
     }
