@@ -1201,6 +1201,73 @@ int main() {
         video_obj.release();
         break;
     }
+    case 31: {
+        // Test case 31:
+        cv::VideoCapture video_read_obj;
+        cv::VideoWriter video_write_obj;
+        int api_preference = cv::CAP_FFMPEG;
+        int fourcc = cv::VideoWriter::fourcc('X', 'V', 'I', 'D');
+        std::time_t now_time = std::time(nullptr);
+        double fps{ 0.0 };
+        cv::Size frame_size;
+        std::string file_path, target_dir, out_path;
+
+        std::cout << "Please input full path of vedio file for cropping:\t";
+        std::cin >> file_path;
+        std::cout << "Please assign the directory for exporting the image file (end with \\):\t";
+        std::cin >> target_dir;
+        out_path = std::string(target_dir) + std::string("cropped_video_")
+            + std::to_string(now_time) + std::string(".avi");
+        video_read_obj = cv::VideoCapture(file_path, cv::CAP_ANY);
+        fps = video_read_obj.get(cv::CAP_PROP_FPS);
+        frame_size = cv::Size(static_cast<std::int32_t>(video_read_obj.get(cv::CAP_PROP_FRAME_WIDTH)),
+          static_cast<std::int32_t>(video_read_obj.get(cv::CAP_PROP_FRAME_HEIGHT)));
+        video_write_obj = cv::VideoWriter(out_path, api_preference, fourcc, fps, frame_size);
+
+        if (video_read_obj.isOpened() && video_read_obj.isOpened()) {
+            auto c = video_read_obj.get(cv::CAP_PROP_FRAME_COUNT);
+            auto total_second = static_cast<std::uint32_t>(c / fps);
+            std::uint32_t location{ 0 }, until{ 0 };
+            cv::Mat current_frame;
+
+            std::cout << "FPS rate = " << fps << "." << std::endl;
+
+            std::cout << "Please assign the start frame to be copied ( 0s to " << total_second - 1 << "s ):\t";
+            std::cin >> location;
+
+            if (location >= total_second)
+              location = 0;
+
+            std::cout << "Please assign the end frame to be copied ( 0s to " << total_second - 1 << "s ):\t";
+            std::cin >> until;
+
+            if ((until >= total_second) || (until < total_second))
+              until = total_second - 1;
+
+            auto start_frame = static_cast<std::int32_t>(static_cast<double>(location) * fps);
+            auto end_frame = static_cast<std::int32_t>(static_cast<double>(until) * fps);
+            auto copy_iters = end_frame - start_frame;
+
+            std::cout << "start_frame = " << start_frame << ", end_frame = " << end_frame << ", copy_iters = " << copy_iters << "." << std::endl;
+
+            video_read_obj.set(cv::CAP_PROP_POS_FRAMES, start_frame);
+            for (int i = 0; i < copy_iters; i++) {
+                auto re = video_read_obj.read(current_frame);
+
+                if (re) {
+                    video_write_obj.write(current_frame);
+                } else {
+                    break;
+                }
+            }
+            std::cout << "Totally " << copy_iters << " frames copied to " << out_path << "." << std::endl;
+        } else {
+            std::cerr << "At least video I/O stream can not be created!" << std::endl;
+        }
+        video_read_obj.release();
+        video_write_obj.release();
+        break;
+    }
     default:
         break;
     }
