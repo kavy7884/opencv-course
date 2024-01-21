@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <opencv2/opencv.hpp>
+#include <opencv2/face/facerec.hpp>
 #include <TinyEXIF.h>
 #include "p201_commonUtil.h"
 #include "p203_commonUtil.h"
@@ -1316,6 +1317,113 @@ int main() {
                 }
             }
         }
+        break;
+    }
+    case 33: {
+        // Test case 33:
+        bool dataCollected = true;
+        std::string sourceDir0, sourceDir1;
+        std::vector<std::string> fileList0;
+        std::vector<std::string> fileList1;
+
+        std::vector<std::string> sourceDirs = { sourceDir0 , sourceDir1 };
+        std::vector< std::vector<std::string> > fileLists = { fileList0, fileList1 };
+        std::vector<cv::Mat> trainingSample;
+        std::vector<int> trainingLabel;
+
+        for (int i = 0; i != sourceDirs.size(); ++i) {
+            bool ret;
+            std::cout << "Please assign the " << i << "-th directory for exporting the image file (end with \"\\\"):\t";
+            std::cin >> sourceDirs[i];
+            ret = p201_commonUtil::getFileList(sourceDirs[i], fileLists[i]);
+
+            if (!ret) {
+                std::cerr << "Getting sample list failed from " << sourceDirs[i] << ".Bye~" << std::endl;
+                dataCollected = false;
+                break;
+            }
+            else {
+                for (auto it = fileLists[i].begin(); it != fileLists[i].end(); ++it) {
+                    std::cout << "Reading raw data from " << *it << std::endl;
+
+                    if (!cv::haveImageReader(*it)) {
+                        std::cerr << "The file is not parsable for openCV:\t" << *it << std::endl;
+                    }
+                    else {
+                        cv::Mat image_buffer = cv::imread(*it);
+
+                        if ((image_buffer.data == nullptr) || (image_buffer.empty())) {
+                            std::cerr << "The file is not readable for openCV:\t" << *it << std::endl;
+                        }
+                        else {
+                            cv::Mat grayscale_buffer;
+                            cv::cvtColor(image_buffer, grayscale_buffer, cv::COLOR_BGR2GRAY);
+                            trainingSample.push_back(grayscale_buffer);
+                            trainingLabel.push_back(i);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (dataCollected) {
+            std::string modelDir, modelPath;
+            std::time_t nowTime = std::time(nullptr);
+#ifdef _DEBUG
+            for (int j = 0; j != trainingLabel.size(); ++j) {
+                std::cout << trainingLabel[j] << " -> ";
+            }
+            std::cout << std::endl;
+#endif // _DEBUG
+
+            std::cout << "Please assign the directory saving the trained face recognition model (end with \"\\\"):\t";
+            std::cin >> modelDir;
+
+            modelPath = std::string(modelDir) + std::string("facemodel_") + std::to_string(nowTime) + std::string(".xml");
+
+            auto face_detecter_model = cv::face::LBPHFaceRecognizer::create();
+            face_detecter_model->train(trainingSample, trainingLabel);
+            face_detecter_model->write(modelPath);
+            std::cout << "FACE Prediction model had been generated and saved to " << modelPath << "." << std::endl;
+        }
+        else {
+            std::cerr << "FACE Prediction model generation failed owing to the data collection failed." << std::endl;
+        }
+
+        break;
+    }
+    case 34: {
+        // Test case 34:
+        std::string fileName, modelPath;
+        std::cout << "Please assign the full path of image file for face detection:\t";
+        std::cin >> fileName;
+        std::cout << "Please assign the full path for importing the pre-defined face recognition model (end with *.modelFile):\t";
+        std::cin >> modelPath;
+
+        if (!cv::haveImageReader(fileName)) {
+            std::cerr << "The file is not parsable for openCV:\t" << fileName << std::endl;
+        }
+        else {
+            cv::Mat image_buffer = cv::imread(fileName);
+
+            if ((image_buffer.data == nullptr) || (image_buffer.empty())) {
+                std::cerr << "The file is not readable for openCV:\t" << fileName << std::endl;
+            }
+            else {
+                cv::Mat grayscale_buffer;
+                int prediction_label = 0;
+                double prediction_confidence = 0.0;
+
+                cv::cvtColor(image_buffer, grayscale_buffer, cv::COLOR_BGR2GRAY);
+
+                auto face_detector_model = cv::face::LBPHFaceRecognizer::create();
+                face_detector_model->read(modelPath);
+                face_detector_model->predict(grayscale_buffer, prediction_label, prediction_confidence);
+
+                std::cout << "My prediction:\tClass " << prediction_label << ". Confidence level = " << prediction_confidence << "." << std::endl;
+            }
+        }
+
         break;
     }
     default:
